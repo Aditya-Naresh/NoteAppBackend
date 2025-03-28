@@ -3,6 +3,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from typing import Annotated
 from uuid import UUID, uuid4
 import jwt
+from jwt import InvalidTokenError
 from fastapi import Depends, HTTPException, APIRouter, status 
 from noteapp_server.models import User, Token, UserCreate
 from passlib.context import CryptContext
@@ -15,7 +16,7 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token")
 
 # Hashing functions
 def verify_password(plain_password, hashed_password):
@@ -29,7 +30,7 @@ async def get_user_by_username(username: str) -> User | None:
     return await User.find_one(User.username == username)
 
 async def get_user_by_id(user_id: UUID) -> User | None:
-    return await User.find_one(User.user_id == str(user_id))  # Convert UUID to string for MongoDB lookup
+    return await User.find_one(User.user_id == user_id)  # Convert UUID to string for MongoDB lookup
 
 async def authenticate_user(username: str, password: str):
     user = await get_user_by_username(username)

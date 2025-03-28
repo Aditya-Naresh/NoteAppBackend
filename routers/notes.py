@@ -6,7 +6,7 @@ from noteapp_server.routers.auth import get_current_active_user
 router = APIRouter()
 
 
-@router.get("/", response_model=Note)
+@router.post("/", response_model=Note)
 async def create_note(note_request: NoteCreate,
                       current_user: User = Depends(get_current_active_user)):
     note = Note(**note_request.model_dump(), user_id = current_user.user_id)
