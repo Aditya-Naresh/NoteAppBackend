@@ -81,7 +81,11 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(data={"sub": str(user.user_id)}, expires_delta=access_token_expires)
-    return Token(access_token=access_token, token_type="bearer")
+
+    response = {"access_token": access_token, "token_type": "bearer"}
+    print("✅ FastAPI Response:", response)  # Debugging
+
+    return response
 
 @router.post("/register", response_model=User)
 async def register_user(user_data: UserCreate):
