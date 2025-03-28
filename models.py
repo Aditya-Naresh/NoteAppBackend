@@ -35,4 +35,24 @@ class UserCreate(BaseModel):
     full_name: str | None = None
     password: str  
 
+class Note(Document):
+    note_id: UUID = Field(default_factory=uuid4, unique=True)
+    user_id: UUID 
+    note_title: str 
+    note_content: str 
+    last_update: date = Field(default_factory=date.today)
+    created_on: date = Field(default_factory=date.today)
 
+    async def save(self, *args, **kwargs):
+        self.updated_at = date.today()
+        if not self.id:
+            return await self.insert()
+        return await self.replace()
+
+    class Settings:
+        name = "notes"
+
+
+class NoteCreate(BaseModel):
+    note_title: str 
+    note_content: str 
